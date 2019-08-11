@@ -13,7 +13,7 @@ type Client interface {
 	Must(func() error)
 
 	SessionFactory
-	Ping() error
+	// Ping() error
 }
 
 // SessionFactory :
