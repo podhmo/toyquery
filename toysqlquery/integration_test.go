@@ -1,35 +1,43 @@
-package toyinmemoryquery_test
+package toysqlquery_test
 
 import (
 	"context"
 	"testing"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/podhmo/noerror"
-	"github.com/podhmo/toyquery/core"
-	"github.com/podhmo/toyquery/toyinmemoryquery"
+	"github.com/podhmo/toyquery/toysqlquery"
 )
 
 type dummy struct {
-	ID   toyinmemoryquery.ID
-	Name string
+	ID   toysqlquery.ID `db:"id"`
+	Name string         `db:"name"`
 }
 
 func TestIt(t *testing.T) {
 	ctx := context.Background()
 
-	var c core.Client
-	defer noerror.Bind(t, &c).Actual(toyinmemoryquery.Connect(ctx)).Teardown()
+	c := toysqlquery.Connect(ctx, "sqlite3", ":memory:")
+	defer noerror.Must(t, c.Close())
 
-	var s core.Session
-	defer noerror.Bind(t, &s).ActualWithError(c.Session(ctx)).Teardown()
+	s, err := c.Session(ctx)
+	noerror.Must(t, err)
+	defer noerror.Must(t, s.Close())
 
 	dummies := []dummy{
 		{ID: "1", Name: "foo"},
 		{ID: "2", Name: "bar"},
 	}
 
-	var table core.Table
-	defer noerror.Bind(t, &table).ActualWithError(s.Table(ctx, "person")).Teardown()
+	table, err := s.Table(ctx, "person")
+	noerror.Must(t, err)
+
+	t.Run("create table", func(t *testing.T) {
+		schema := `CREATE TABLE person (
+        id text primary key,
+        name text);`
+		s.MustExec(ctx, schema)
+	})
 
 	t.Run("insert", func(t *testing.T) {
 		{

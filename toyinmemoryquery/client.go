@@ -2,6 +2,8 @@ package toyinmemoryquery
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"github.com/podhmo/toyquery/core"
 )
@@ -39,7 +41,7 @@ func (c *Client) Must(run func() error) {
 }
 
 // Session :
-func (c *Client) Session(ctx context.Context, uri string) (core.Session, error) {
+func (c *Client) Session(ctx context.Context) (core.Session, error) {
 	return &Session{
 		Client: c,
 	}, nil
@@ -85,4 +87,11 @@ func (s *Session) Table(ctx context.Context, name string) (core.Table, error) {
 		w = u.NewWorld(name)
 	}
 	return w, nil
+}
+
+// MustExec
+func (s *Session) MustExec(ctx context.Context, code string) {
+	fmt.Fprintln(os.Stderr, "*****not supported *********************")
+	fmt.Fprintln(os.Stderr, code)
+	fmt.Fprintln(os.Stderr, "****************************************")
 }

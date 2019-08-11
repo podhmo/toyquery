@@ -18,13 +18,14 @@ type Client interface {
 
 // SessionFactory :
 type SessionFactory interface {
-	Session(ctx context.Context, uri string) (Session, error)
+	Session(ctx context.Context) (Session, error)
 }
 
 // Session :
 type Session interface {
 	io.Closer
 	Table(ctx context.Context, name string) (Table, error)
+	MustExec(ctx context.Context, code string)
 }
 
 // Table :
