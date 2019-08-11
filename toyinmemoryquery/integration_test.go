@@ -1,16 +1,16 @@
-package internaltoyquery_test
+package toyinmemoryquery_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/podhmo/noerror"
-	"github.com/podhmo/toyquery/internaltoyquery"
+	"github.com/podhmo/toyquery/toyinmemoryquery"
 	"github.com/podhmo/toyquery/core"
 )
 
 type dummy struct {
-	ID   internaltoyquery.ID
+	ID   toyinmemoryquery.ID
 	Name string
 }
 
@@ -18,7 +18,7 @@ func TetstIt(t *testing.T) {
 	ctx := context.Background()
 
 	var c core.Client
-	defer noerror.Bind(t, &c).Actual(internaltoyquery.Connect(ctx)).Teardown()
+	defer noerror.Bind(t, &c).Actual(toyinmemoryquery.Connect(ctx)).Teardown()
 
 	var s core.Session
 	defer noerror.Bind(t, &s).ActualWithError(c.Session(ctx, "db")).Teardown()
