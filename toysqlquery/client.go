@@ -34,13 +34,6 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// Must :
-func (c *Client) Must(run func() error) {
-	if err := run(); err != nil {
-		panic(err)
-	}
-}
-
 // Session :
 func (c *Client) Session(ctx context.Context) (core.Session, error) {
 	c.mu.Lock()

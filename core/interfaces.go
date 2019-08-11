@@ -10,8 +10,6 @@ import (
 // Client :
 type Client interface {
 	io.Closer
-	Must(func() error)
-
 	SessionFactory
 	// Ping() error
 }
