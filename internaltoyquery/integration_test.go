@@ -6,7 +6,7 @@ import (
 
 	"github.com/podhmo/noerror"
 	"github.com/podhmo/toyquery/internaltoyquery"
-	"github.com/podhmo/toyquery/toyquerycore"
+	"github.com/podhmo/toyquery/core"
 )
 
 type dummy struct {
@@ -17,10 +17,10 @@ type dummy struct {
 func TetstIt(t *testing.T) {
 	ctx := context.Background()
 
-	var c toyquerycore.Client
+	var c core.Client
 	defer noerror.Bind(t, &c).Actual(internaltoyquery.Connect(ctx)).Teardown()
 
-	var s toyquerycore.Session
+	var s core.Session
 	defer noerror.Bind(t, &s).ActualWithError(c.Session(ctx, "db")).Teardown()
 
 	dummies := []dummy{
@@ -28,7 +28,7 @@ func TetstIt(t *testing.T) {
 		{ID: "2", Name: "bar"},
 	}
 
-	var table toyquerycore.Table
+	var table core.Table
 	defer noerror.Bind(t, &table).ActualWithError(s.Table(ctx, "person")).Teardown()
 
 	t.Run("insert", func(t *testing.T) {

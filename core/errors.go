@@ -1,4 +1,4 @@
-package toyquerycore
+package core
 
 import (
 	"fmt"

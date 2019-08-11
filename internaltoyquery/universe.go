@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/podhmo/toyquery/toyquerycore"
+	"github.com/podhmo/toyquery/core"
 )
 
 // Not goroutine safe
@@ -57,7 +57,7 @@ func (w *World) Count(ctx context.Context) (int, error) {
 func (w *World) InsertByID(ctx context.Context, id ID, src interface{}) error {
 	var ob Object
 	if err := Materialize(&ob, src); err != nil {
-		return toyquerycore.ErrSomethingWrong.Wrap(err, w.Describe())
+		return core.ErrSomethingWrong.Wrap(err, w.Describe())
 	}
 	w.Objects[id] = &ob
 	return nil
@@ -68,7 +68,7 @@ func (w *World) FindByID(ctx context.Context, id ID, dst interface{}) error {
 	if ob, ok := w.Objects[id]; ok {
 		return Unmaterialize(dst, ob)
 	}
-	return toyquerycore.ErrRecordNotFound.New(w.Describe())
+	return core.ErrRecordNotFound.New(w.Describe())
 }
 
 // Object :
