@@ -56,8 +56,10 @@ func Connect(ctx context.Context, options ...func(*Config)) *Client {
 		opt(c)
 	}
 	return &Client{
-		Config:   c,
-		Universe: &Universe{},
+		Config: c,
+		Universe: &Universe{
+			Worlds: map[string]*World{},
+		},
 	}
 }
 
