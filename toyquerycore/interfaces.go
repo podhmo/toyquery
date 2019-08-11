@@ -1,6 +1,9 @@
 package toyquerycore
 
-import "io"
+import (
+	"context"
+	"io"
+)
 
 // TODO: rename
 
@@ -15,21 +18,21 @@ type Client interface {
 
 // SessionFactory :
 type SessionFactory interface {
-	Session(uri string) (Session, error)
+	Session(ctx context.Context, uri string) (Session, error)
 }
 
 // Session :
 type Session interface {
 	io.Closer
-	Table(name string) (Table, error)
+	Table(ctx context.Context, name string) (Table, error)
 }
 
 // Table :
 type Table interface {
 	// TODO: add methods (tentative)
-	FindByID(id ID, val interface{}) error
-	InsertByID(id ID, val interface{}) error
-	Count() (int, error)
+	FindByID(ctx context.Context, id ID, val interface{}) error
+	InsertByID(ctx context.Context, id ID, val interface{}) error
+	Count(ctx context.Context) (int, error)
 }
 
 // ID :

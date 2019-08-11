@@ -1,15 +1,18 @@
 package internaltoyquery
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/podhmo/toyquery/toyquerycore"
 )
 
+// Not goroutine safe
+//
+// universe, world, object = database, table, record (document)
+
 // ID :
 type ID = string
-
-// universe, world, object = database, table, record (document)
 
 func newUniverse() *Universe {
 	return &Universe{
@@ -46,12 +49,12 @@ func (w *World) Describe() string {
 }
 
 // Count :
-func (w *World) Count() (int, error) {
+func (w *World) Count(ctx context.Context) (int, error) {
 	return len(w.Objects), nil
 }
 
 // InsertByID :
-func (w *World) InsertByID(id ID, src interface{}) error {
+func (w *World) InsertByID(ctx context.Context, id ID, src interface{}) error {
 	var ob Object
 	if err := Materialize(&ob, src); err != nil {
 		return toyquerycore.ErrSomethingWrong.Wrap(err, w.Describe())
@@ -61,7 +64,7 @@ func (w *World) InsertByID(id ID, src interface{}) error {
 }
 
 // FindByID :
-func (w *World) FindByID(id ID, dst interface{}) error {
+func (w *World) FindByID(ctx context.Context, id ID, dst interface{}) error {
 	if ob, ok := w.Objects[id]; ok {
 		return Unmaterialize(dst, ob)
 	}

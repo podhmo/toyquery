@@ -6,6 +6,7 @@ import (
 
 	"github.com/podhmo/noerror"
 	"github.com/podhmo/toyquery/internaltoyquery"
+	"github.com/podhmo/toyquery/toyquerycore"
 )
 
 type dummy struct {
@@ -15,35 +16,35 @@ type dummy struct {
 
 func TetstIt(t *testing.T) {
 	ctx := context.Background()
-	c := internaltoyquery.Connect(ctx)
 
-	defer c.Must(c.Close)
-	s, err := c.Session("db")
-	noerror.Must(t, err)
-	defer c.Must(c.Close)
+	var c toyquerycore.Client
+	defer noerror.Bind(t, &c).Actual(internaltoyquery.Connect(ctx)).Teardown()
+
+	var s toyquerycore.Session
+	defer noerror.Bind(t, &s).ActualWithError(c.Session(ctx, "db")).Teardown()
 
 	dummies := []dummy{
 		{ID: "1", Name: "foo"},
 		{ID: "2", Name: "bar"},
 	}
 
-	table, err := s.Table("person")
-	noerror.Must(t, err)
+	var table toyquerycore.Table
+	defer noerror.Bind(t, &table).ActualWithError(s.Table(ctx, "person")).Teardown()
 
 	t.Run("insert", func(t *testing.T) {
 		{
 			ob := dummies[0]
-			noerror.Must(t, table.InsertByID(ob.ID, &ob))
+			noerror.Must(t, table.InsertByID(ctx, ob.ID, &ob))
 		}
 		{
 			ob := dummies[1]
-			noerror.Must(t, table.InsertByID(ob.ID, &ob))
+			noerror.Must(t, table.InsertByID(ctx, ob.ID, &ob))
 		}
 	})
 
 	t.Run("count", func(t *testing.T) {
 		noerror.Should(t,
-			noerror.Equal(2).ActualWithError(table.Count()),
+			noerror.Equal(2).ActualWithError(table.Count(ctx)),
 		)
 	})
 }
