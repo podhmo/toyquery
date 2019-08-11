@@ -13,7 +13,7 @@ type Client interface {
 
 // SessionFactory :
 type SessionFactory interface {
-	Session(name string) (Session, error)
+	Session(uri string) (Session, error)
 }
 
 // Session :
