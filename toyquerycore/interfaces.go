@@ -7,6 +7,8 @@ import "io"
 // Client :
 type Client interface {
 	io.Closer
+	Must(func() error)
+
 	SessionFactory
 	Ping() error
 }
@@ -18,6 +20,14 @@ type SessionFactory interface {
 
 // Session :
 type Session interface {
-	// TODO: add methods
 	io.Closer
+
+	// TODO: add methods
+	// tenatative
+	FindByID(name string, id ID, val interface{}) error
+	InsertByID(name string, id ID, val interface{}) error
+	Count(name string) (int, error)
 }
+
+// ID :
+type ID = string
