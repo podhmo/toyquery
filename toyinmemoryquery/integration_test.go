@@ -16,5 +16,10 @@ func TestIt(t *testing.T) {
 			return toyinmemoryquery.Connect(ctx)
 		},
 	}
-	suite.Simple(t, ctx, env)
+	t.Run("simple", func(t *testing.T) {
+		suite.Simple(t, ctx, env)
+	})
+	t.Run("shortcut", func(t *testing.T) {
+		suite.Shortcut(t, env)
+	})
 }
