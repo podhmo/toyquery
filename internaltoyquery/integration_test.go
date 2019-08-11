@@ -27,22 +27,23 @@ func TetstIt(t *testing.T) {
 		{ID: "2", Name: "bar"},
 	}
 
-	dbname := "person"
+	table, err := s.Table("person")
+	noerror.Must(t, err)
 
 	t.Run("insert", func(t *testing.T) {
 		{
 			ob := dummies[0]
-			noerror.Must(t, s.InsertByID(dbname, ob.ID, &ob))
+			noerror.Must(t, table.InsertByID(ob.ID, &ob))
 		}
 		{
 			ob := dummies[1]
-			noerror.Must(t, s.InsertByID(dbname, ob.ID, &ob))
+			noerror.Must(t, table.InsertByID(ob.ID, &ob))
 		}
 	})
 
 	t.Run("count", func(t *testing.T) {
 		noerror.Should(t,
-			noerror.Equal(2).ActualWithError(s.Count(dbname)),
+			noerror.Equal(2).ActualWithError(table.Count()),
 		)
 	})
 }

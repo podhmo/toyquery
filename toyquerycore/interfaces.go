@@ -21,12 +21,15 @@ type SessionFactory interface {
 // Session :
 type Session interface {
 	io.Closer
+	Table(name string) (Table, error)
+}
 
-	// TODO: add methods
-	// tenatative
-	FindByID(name string, id ID, val interface{}) error
-	InsertByID(name string, id ID, val interface{}) error
-	Count(name string) (int, error)
+// Table :
+type Table interface {
+	// TODO: add methods (tentative)
+	FindByID(id ID, val interface{}) error
+	InsertByID(id ID, val interface{}) error
+	Count() (int, error)
 }
 
 // ID :

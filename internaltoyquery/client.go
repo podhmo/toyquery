@@ -70,45 +70,19 @@ func (s *Session) Close() error {
 	return nil
 }
 
-// Count :
-func (s *Session) Count(name string) (int, error) {
-	if s.Client.Universe == nil {
-		return 0, toyquerycore.ErrTableNotFound
-	}
-
-	w, ok := s.Client.Universe.Worlds[name]
-	if !ok {
-		return 0, toyquerycore.ErrTableNotFound.New(name)
-	}
-	return w.Count()
-}
-
-// FindByID :
-func (s *Session) FindByID(name string, id ID, val interface{}) error {
-	if s.Client.Universe == nil {
-		return toyquerycore.ErrTableNotFound
-	}
-
-	w, ok := s.Client.Universe.Worlds[name]
-	if !ok {
-		return toyquerycore.ErrTableNotFound.New(name)
-	}
-
-	return w.FindByID(id, val)
-}
-
-func (s *Session) InsertByID(name string, id ID, val interface{}) error {
+// Table :
+func (s *Session) Table(name string) (toyquerycore.Table, error) {
 	u := s.Client.Universe
 	if u == nil {
-		return toyquerycore.ErrTableNotFound
+		return nil, toyquerycore.ErrTableNotFound
 	}
 
 	w, ok := u.Worlds[name]
 	if !ok {
 		if !s.Client.Config.AutoCreate {
-			return toyquerycore.ErrTableNotFound.New(name)
+			return nil, toyquerycore.ErrTableNotFound.New(name)
 		}
 		w = u.NewWorld(name)
 	}
-	return w.InsertByID(id, val)
+	return w, nil
 }
