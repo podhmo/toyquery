@@ -3,6 +3,7 @@ module github.com/podhmo/toyquery
 go 1.12
 
 require (
+	github.com/google/shlex v0.0.0-20181106134648-c34317bd91bf
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/mattn/go-sqlite3 v1.9.0
 	github.com/pkg/errors v0.8.1
