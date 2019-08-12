@@ -81,10 +81,12 @@ func (s *Session) Table(ctx context.Context, name string) (toyquery.Table, error
 	return &Table{session: s, Name: tableName}, nil
 }
 
-// MustExec
-func (s *Session) MustExec(ctx context.Context, code string) {
+// Exec
+func (s *Session) Exec(ctx context.Context, code string) error {
 	db := s.Client.DB
-	db.MustExecContext(ctx, code)
+	result, err := db.ExecContext(ctx, code)
+	_ = result // TODO: saved in session? (lastInsertID is included?)
+	return err
 }
 
 // Table :
@@ -137,7 +139,7 @@ func (t *Table) InsertByID(ctx context.Context, id ID, v interface{}) error {
 
 	db := t.session.Client.DB
 	result, err := db.ExecContext(ctx, stmt, values...)
-	_ = result // TODO: saved in session?
+	_ = result // TODO: saved in session? (lastInsertID is included?)
 	return err
 }
 

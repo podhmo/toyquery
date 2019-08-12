@@ -23,7 +23,7 @@ type SessionFactory interface {
 type Session interface {
 	io.Closer
 	Table(ctx context.Context, name string) (Table, error)
-	MustExec(ctx context.Context, code string)
+	Exec(ctx context.Context, code string) error
 }
 
 // Table :

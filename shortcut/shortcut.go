@@ -40,7 +40,7 @@ func (s *session) Raw() toyquery.Session {
 func (s *session) MustExec(t *testing.T, code string) {
 	t.Helper()
 	ctx := context.Background()
-	s.session.MustExec(ctx, code)
+	noerror.Must(t, s.session.Exec(ctx, code))
 }
 
 // Table :

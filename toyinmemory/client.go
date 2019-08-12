@@ -84,9 +84,10 @@ func (s *Session) Table(ctx context.Context, name string) (toyquery.Table, error
 	return w, nil
 }
 
-// MustExec
-func (s *Session) MustExec(ctx context.Context, code string) {
+// Exec
+func (s *Session) Exec(ctx context.Context, code string) error {
 	fmt.Fprintln(os.Stderr, "*****not supported *********************")
 	fmt.Fprintln(os.Stderr, code)
 	fmt.Fprintln(os.Stderr, "****************************************")
+	return nil
 }

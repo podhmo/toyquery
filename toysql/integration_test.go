@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/podhmo/noerror"
 	"github.com/podhmo/toyquery"
 	"github.com/podhmo/toyquery/suite"
 	"github.com/podhmo/toyquery/toysql"
@@ -21,7 +22,7 @@ func TestIt(t *testing.T) {
         id text primary key not null,
         name text not null,
         value integer not null);`
-			s.MustExec(ctx, schema)
+			noerror.Must(t, s.Exec(ctx, schema))
 		},
 	}
 
