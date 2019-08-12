@@ -32,7 +32,7 @@ type Table interface {
 	GetByID(ctx context.Context, id ID, val interface{}) error
 	Get(ctx context.Context, val interface{}, options ...func(*QOption)) error
 	InsertByID(ctx context.Context, id ID, val interface{}) error
-	Count(ctx context.Context) (int, error)
+	Count(ctx context.Context, options ...func(*QOption)) (int, error)
 }
 
 // ID :

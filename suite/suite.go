@@ -59,6 +59,9 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 		noerror.Should(t,
 			noerror.Equal(2).ActualWithError(table.Count(ctx)),
 		)
+		noerror.Should(t,
+			noerror.Equal(1).ActualWithError(table.Count(ctx, toyquery.Where("name = ?", "foo"))),
+		)
 	})
 
 	t.Run("find by id", func(t *testing.T) {

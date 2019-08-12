@@ -50,8 +50,39 @@ func (w *World) Describe() string {
 }
 
 // Count :
-func (w *World) Count(ctx context.Context) (int, error) {
-	return len(w.Objects), nil
+func (w *World) Count(ctx context.Context, options ...func(*toyquery.QOption)) (int, error) {
+	q := &toyquery.QOption{}
+	for _, op := range options {
+		op(q)
+	}
+
+	exprs := make([]Expr, 0, len(q.Wheres))
+	for _, opt := range q.Wheres {
+		expr, err := Parse(opt.Fmt, opt.Vals[0])
+		if err != nil {
+			return 0, toyquery.ErrInvalidCondition.Wrap(err, fmt.Sprintf("%s with %v", opt.Fmt, opt.Vals[0]))
+		}
+		exprs = append(exprs, expr)
+	}
+
+	c := 0
+	for _, ob := range w.Objects {
+		ok := true
+		for _, expr := range exprs {
+			matched, err := Eval(expr, ob)
+			if err != nil {
+				return 0, toyquery.ErrSomethingWrong.Wrap(err, fmt.Sprintf("%v with %v", expr, ob))
+			}
+			if !matched {
+				ok = matched
+				break
+			}
+		}
+		if ok {
+			c++
+		}
+	}
+	return c, nil
 }
 
 // InsertByID :
@@ -108,7 +139,6 @@ func (w *World) Get(ctx context.Context, dst interface{}, options ...func(*toyqu
 		}
 	}
 	return toyquery.ErrRecordNotFound.New(fmt.Sprintf("%s with %+v", w.Describe(), exprs))
-
 }
 
 // Object :

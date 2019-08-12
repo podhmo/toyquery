@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/podhmo/noerror"
+	"github.com/podhmo/toyquery"
 )
 
 func TestQuery(t *testing.T) {
@@ -44,5 +45,14 @@ func TestQuery(t *testing.T) {
 				noerror.Should(t, noerror.DeepEqual(p).Actual(got))
 			})
 		}
+	})
+
+	t.Run("count", func(t *testing.T) {
+		noerror.Should(t,
+			noerror.Equal(2).ActualWithError(w.Count(ctx)),
+		)
+		noerror.Should(t,
+			noerror.Equal(1).ActualWithError(w.Count(ctx, toyquery.Where("? = Name", "foo"))),
+		)
 	})
 }

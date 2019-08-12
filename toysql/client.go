@@ -96,17 +96,35 @@ type Table struct {
 }
 
 // Count :
-func (t *Table) Count(ctx context.Context) (int, error) {
+func (t *Table) Count(ctx context.Context, options ...func(*toyquery.QOption)) (int, error) {
+	q := &toyquery.QOption{}
+	for _, op := range options {
+		op(q)
+	}
+
+	var vals []interface{}
+	var fmts []string
+	for _, opt := range q.Wheres {
+		fmts = append(fmts, opt.Fmt)
+		vals = append(vals, opt.Vals...)
+	}
+
+	var stmt string
+	if len(q.Wheres) == 0 {
+		stmt = fmt.Sprintf(
+			`SELECT count(*) FROM %s`,
+			t.Name,
+		)
+	} else {
+		stmt = fmt.Sprintf(
+			`SELECT count(*) FROM %s WHERE %s`,
+			t.Name, strings.Join(fmts, " AND "),
+		)
+	}
+
 	var c int
-
-	// XXX: SQLInjection (t.Name is stripped, but)
-	stmt := fmt.Sprintf(
-		`SELECT count(*) FROM %s`,
-		t.Name,
-	)
-
 	db := t.session.Client.DB
-	if err := db.GetContext(ctx, &c, stmt); err != nil {
+	if err := db.GetContext(ctx, &c, stmt, vals...); err != nil {
 		return 0, toyquery.ErrRecordNotFound.Wrap(err, t.Name)
 	}
 	return c, nil
