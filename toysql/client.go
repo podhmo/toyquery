@@ -141,15 +141,15 @@ func (t *Table) InsertByID(ctx context.Context, id ID, v interface{}) error {
 	return err
 }
 
-// FindByID :
-func (t *Table) FindByID(ctx context.Context, id ID, dst interface{}) error {
+// GetByID :
+func (t *Table) GetByID(ctx context.Context, id ID, dst interface{}) error {
 	// SELECT (<column name>...) FROM <table name> WHERE <id>=?
 	// TODO : id field
-	return t.Find(ctx, dst, toyquery.Where("id=?", id))
+	return t.Get(ctx, dst, toyquery.Where("id=?", id))
 }
 
-// Find :
-func (t *Table) Find(ctx context.Context, dst interface{}, options ...func(*toyquery.QOption)) error {
+// Get :
+func (t *Table) Get(ctx context.Context, dst interface{}, options ...func(*toyquery.QOption)) error {
 	q := &toyquery.QOption{}
 	for _, op := range options {
 		op(q)

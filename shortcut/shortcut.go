@@ -72,9 +72,9 @@ func (tbl *table) InsertByID(t *testing.T, id ID, v interface{}) {
 	noerror.Must(t, tbl.Table.InsertByID(ctx, id, v))
 }
 
-// FindByID :
-func (tbl *table) FindByID(t *testing.T, id ID, v interface{}) {
+// GetByID :
+func (tbl *table) GetByID(t *testing.T, id ID, v interface{}) {
 	t.Helper()
 	ctx := context.Background()
-	noerror.Must(t, tbl.Table.FindByID(ctx, id, v))
+	noerror.Must(t, tbl.Table.GetByID(ctx, id, v))
 }

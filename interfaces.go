@@ -29,8 +29,8 @@ type Session interface {
 // Table :
 type Table interface {
 	// TODO: add methods (tentative)
-	FindByID(ctx context.Context, id ID, val interface{}) error
-	Find(ctx context.Context, val interface{}, options ...func(*QOption)) error
+	GetByID(ctx context.Context, id ID, val interface{}) error
+	Get(ctx context.Context, val interface{}, options ...func(*QOption)) error
 	InsertByID(ctx context.Context, id ID, val interface{}) error
 	Count(ctx context.Context) (int, error)
 }

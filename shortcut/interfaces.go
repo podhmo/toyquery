@@ -30,7 +30,7 @@ type Session interface {
 // Table :
 type Table interface {
 	// TODO: add methods (tentative)
-	FindByID(t *testing.T, id ID, val interface{})
+	GetByID(t *testing.T, id ID, val interface{})
 	InsertByID(t *testing.T, id ID, val interface{})
 	Count(t *testing.T) int
 }

@@ -64,16 +64,16 @@ func (w *World) InsertByID(ctx context.Context, id ID, src interface{}) error {
 	return nil
 }
 
-// FindByID :
-func (w *World) FindByID(ctx context.Context, id ID, dst interface{}) error {
+// GetByID :
+func (w *World) GetByID(ctx context.Context, id ID, dst interface{}) error {
 	if ob, ok := w.Objects[id]; ok {
 		return Unmaterialize(dst, ob)
 	}
 	return toyquery.ErrRecordNotFound.New(w.Describe())
 }
 
-// Find :
-func (w *World) Find(ctx context.Context, dst interface{}, options ...func(*toyquery.QOption)) error {
+// Get :
+func (w *World) Get(ctx context.Context, dst interface{}, options ...func(*toyquery.QOption)) error {
 	q := &toyquery.QOption{}
 	for _, op := range options {
 		op(q)

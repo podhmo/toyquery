@@ -63,25 +63,25 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 
 	t.Run("find by id", func(t *testing.T) {
 		var got dummy
-		noerror.Must(t, table.FindByID(ctx, dummies[1].ID, &got))
+		noerror.Must(t, table.GetByID(ctx, dummies[1].ID, &got))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 	})
 
 	t.Run("find", func(t *testing.T) {
 		var got dummy
-		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("id = ?", dummies[0].ID)))
+		noerror.Must(t, table.Get(ctx, &got, toyquery.Where("id = ?", dummies[0].ID)))
 		noerror.Should(t, noerror.DeepEqual(dummies[0]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("? <> id", dummies[0].ID)))
+		noerror.Must(t, table.Get(ctx, &got, toyquery.Where("? <> id", dummies[0].ID)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("? < value", dummies[0].Value)))
+		noerror.Must(t, table.Get(ctx, &got, toyquery.Where("? < value", dummies[0].Value)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("value > ?", dummies[0].Value)))
+		noerror.Must(t, table.Get(ctx, &got, toyquery.Where("value > ?", dummies[0].Value)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("name = ?", dummies[0].Name)))
+		noerror.Must(t, table.Get(ctx, &got, toyquery.Where("name = ?", dummies[0].Name)))
 		noerror.Should(t, noerror.DeepEqual(dummies[0]).Actual(got))
 	})
 }
@@ -130,7 +130,7 @@ func Shortcut(t *testing.T, env *Env) {
 
 	t.Run("find one", func(t *testing.T) {
 		var got dummy
-		table.FindByID(t, dummies[1].ID, &got)
+		table.GetByID(t, dummies[1].ID, &got)
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 	})
 }

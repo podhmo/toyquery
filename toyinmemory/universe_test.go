@@ -40,7 +40,7 @@ func TestQuery(t *testing.T) {
 			p := p
 			t.Run(p.Name, func(t *testing.T) {
 				var got Person
-				noerror.Must(t, w.FindByID(ctx, p.Name, &got))
+				noerror.Must(t, w.GetByID(ctx, p.Name, &got))
 				noerror.Should(t, noerror.DeepEqual(p).Actual(got))
 			})
 		}
