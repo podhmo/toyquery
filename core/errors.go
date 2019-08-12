@@ -82,4 +82,6 @@ var (
 	ErrSomethingWrong = DefineError(fmt.Errorf("something wrong")) // ???
 	// ErrEmptyCondition :
 	ErrEmptyCondition = DefineError(fmt.Errorf("empty condition")) // ???
+	// ErrInvalidCondition :
+	ErrInvalidCondition = DefineError(fmt.Errorf("invalid condition")) // ???
 )

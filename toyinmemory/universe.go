@@ -3,6 +3,7 @@ package toyinmemory
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/podhmo/toyquery/core"
 )
@@ -69,6 +70,45 @@ func (w *World) FindByID(ctx context.Context, id ID, dst interface{}) error {
 		return Unmaterialize(dst, ob)
 	}
 	return core.ErrRecordNotFound.New(w.Describe())
+}
+
+// Find :
+func (w *World) Find(ctx context.Context, dst interface{}, options ...func(*core.QOption)) error {
+	q := &core.QOption{}
+	for _, op := range options {
+		op(q)
+	}
+	if len(q.Wheres) == 0 {
+		return core.ErrEmptyCondition.New(w.Describe())
+	}
+
+	exprs := make([]Expr, 0, len(q.Wheres))
+	for _, opt := range q.Wheres {
+		expr, err := Parse(opt.Fmt, opt.Vals[0])
+		if err != nil {
+			return core.ErrInvalidCondition.Wrap(err, fmt.Sprintf("%s with %v", opt.Fmt, opt.Vals[0]))
+		}
+		exprs = append(exprs, expr)
+	}
+
+	for _, ob := range w.Objects {
+		ok := true
+		for _, expr := range exprs {
+			matched, err := Eval(expr, ob)
+			if err != nil {
+				return core.ErrSomethingWrong.Wrap(err, fmt.Sprintf("%v with %v", expr, ob))
+			}
+			if !matched {
+				ok = matched
+				break
+			}
+		}
+		if ok {
+			return Unmaterialize(dst, ob)
+		}
+	}
+	return core.ErrRecordNotFound.New(w.Describe())
+
 }
 
 // Object :
