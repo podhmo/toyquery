@@ -66,6 +66,7 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 		noerror.Must(t, table.FindByID(ctx, dummies[1].ID, &got))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 	})
+
 	t.Run("find", func(t *testing.T) {
 		var got dummy
 		noerror.Must(t, table.Find(ctx, &got, core.Where("id = ?", dummies[0].ID)))

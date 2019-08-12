@@ -25,5 +25,8 @@ func TestIt(t *testing.T) {
 		},
 	}
 
-	suite.Simple(t, ctx, env)
+	// todo: drop db
+	t.Run("simple", func(t *testing.T) {
+		suite.Simple(t, ctx, env)
+	})
 }
