@@ -80,6 +80,9 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 
 		noerror.Must(t, table.Find(ctx, &got, core.Where("value > ?", dummies[0].Value)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
+
+		noerror.Must(t, table.Find(ctx, &got, core.Where("name = ?", dummies[0].Name)))
+		noerror.Should(t, noerror.DeepEqual(dummies[0]).Actual(got))
 	})
 }
 
