@@ -70,19 +70,19 @@ func Shortcut(t *testing.T, env *Env) {
 
 	c, teardown := shortcut.Create(t, env.Connect())
 	defer teardown()
-	s := c.Session(t)
-	defer noerror.Must(t, s.Session().Close()) // TODO: AddTeardown
+	s := c.Session()
+	defer noerror.Must(t, s.Raw().Close()) // TODO: AddTeardown
 
 	dummies := []dummy{
 		{ID: "1", Name: "foo"},
 		{ID: "2", Name: "bar"},
 	}
 
-	table := s.Table(t, "person")
+	table := s.Table("person")
 
 	if env.Setup != nil {
 		t.Run("setup", func(t *testing.T) {
-			env.Setup(s.Session())
+			env.Setup(s.Raw())
 		})
 	}
 

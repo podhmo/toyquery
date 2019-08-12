@@ -17,14 +17,14 @@ type Client interface {
 
 // SessionFactory :
 type SessionFactory interface {
-	Session(t *testing.T) Session
+	Session() Session
 }
 
 // Session :
 type Session interface {
-	Table(t *testing.T, name string) Table
+	Table(name string) Table
 	MustExec(t *testing.T, code string) // ?
-	Session() core.Session
+	Raw() core.Session
 }
 
 // Table :

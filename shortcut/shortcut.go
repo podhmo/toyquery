@@ -10,27 +10,29 @@ import (
 
 // Create :
 func Create(t *testing.T, c core.Client) (Client, func()) {
-	return &client{Client: c}, func() { t.Helper(); noerror.Must(t, c.Close()) }
+	return &client{t: t, Client: c}, func() { t.Helper(); noerror.Must(t, c.Close()) }
 }
 
 type client struct {
+	t      *testing.T
 	Client core.Client
 }
 
-func (c *client) Session(t *testing.T) Session {
-	t.Helper()
+func (c *client) Session() Session {
+	c.t.Helper()
 	ctx := context.Background()
 	s, err := c.Client.Session(ctx)
-	noerror.Must(t, err)
-	return &session{session: s}
+	noerror.Must(c.t, err)
+	return &session{t: c.t, session: s}
 }
 
 type session struct {
+	t       *testing.T
 	session core.Session
 }
 
-// Session :
-func (s *session) Session() core.Session {
+// Raw :
+func (s *session) Raw() core.Session {
 	return s.session
 }
 
@@ -42,11 +44,11 @@ func (s *session) MustExec(t *testing.T, code string) {
 }
 
 // Table :
-func (s *session) Table(t *testing.T, name string) Table {
-	t.Helper()
+func (s *session) Table(name string) Table {
+	s.t.Helper()
 	ctx := context.Background()
 	tbl, err := s.session.Table(ctx, name)
-	noerror.Must(t, err)
+	noerror.Must(s.t, err)
 	return &table{Table: tbl}
 }
 
