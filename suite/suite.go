@@ -59,6 +59,12 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 			noerror.Equal(2).ActualWithError(table.Count(ctx)),
 		)
 	})
+
+	t.Run("find one", func(t *testing.T) {
+		var got dummy
+		noerror.Must(t, table.FindByID(ctx, dummies[1].ID, &got))
+		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
+	})
 }
 
 // Shortcut
@@ -101,5 +107,11 @@ func Shortcut(t *testing.T, env *Env) {
 		noerror.Should(t,
 			noerror.Equal(2).Actual(table.Count(t)),
 		)
+	})
+
+	t.Run("find one", func(t *testing.T) {
+		var got dummy
+		table.FindByID(t, dummies[1].ID, &got)
+		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 	})
 }
