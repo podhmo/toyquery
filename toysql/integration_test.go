@@ -1,4 +1,4 @@
-package toysqlquery_test
+package toysql_test
 
 import (
 	"context"
@@ -7,14 +7,14 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/podhmo/toyquery/core"
 	"github.com/podhmo/toyquery/suite"
-	"github.com/podhmo/toyquery/toysqlquery"
+	"github.com/podhmo/toyquery/toysql"
 )
 
 func TestIt(t *testing.T) {
 	ctx := context.Background()
 	env := &suite.Env{
 		Connect: func() core.Client {
-			return toysqlquery.Connect(ctx, "sqlite3", ":memory:")
+			return toysql.Connect(ctx, "sqlite3", ":memory:")
 		},
 		Setup: func(s core.Session) {
 			schema := `CREATE TABLE person (

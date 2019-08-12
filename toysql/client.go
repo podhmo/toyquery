@@ -1,4 +1,4 @@
-package toysqlquery
+package toysql
 
 import (
 	"context"

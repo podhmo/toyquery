@@ -1,4 +1,4 @@
-package toyinmemoryquery
+package toyinmemory
 
 import (
 	"context"
