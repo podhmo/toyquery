@@ -89,28 +89,42 @@ var m = reflectx.NewMapperFunc("db", func(s string) string { return s })
 
 // eval :
 func eval(expr Expr, env interface{}, check func(x, y interface{}) (bool, error)) (bool, error) {
-	x := m.FieldByName(reflect.ValueOf(env), expr.Name).Interface()
-	y := expr.Value
-	return check(x, y)
+	switch env := env.(type) {
+	case map[string]interface{}:
+		x := env[expr.Name]
+		y := expr.Value
+		return check(x, y)
+	case Object:
+		x := env[expr.Name]
+		y := expr.Value
+		return check(x, y)
+	case *Object:
+		x := (*env)[expr.Name]
+		y := expr.Value
+		return check(x, y)
+	default:
+		x := m.FieldByName(reflect.ValueOf(env), expr.Name).Interface()
+		y := expr.Value
+		return check(x, y)
+	}
 }
 
 // GreaterThan is x > y
 func GreaterThan(x interface{}, y interface{}) (bool, error) {
 	rx := reflect.ValueOf(x)
 	ry := reflect.ValueOf(y)
-	if reflect.TypeOf(x).Kind() != reflect.TypeOf(y).Kind() {
-		// return rx.Float() > ry.Convert(rx.Type()).Float(), nil
-		return false, fmt.Errorf("mismatch %s <-> %s", rx.Kind(), ry.Kind())
-	}
+	// if reflect.TypeOf(x).Kind() != reflect.TypeOf(y).Kind() {
+	// 	return false, fmt.Errorf("mismatch %s <-> %s", rx.Kind(), ry.Kind())
+	// }
 	switch rx.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return rx.Int() > ry.Int(), nil
+		return rx.Int() > ry.Convert(rx.Type()).Int(), nil
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return rx.Uint() > ry.Uint(), nil
+		return rx.Uint() > ry.Convert(rx.Type()).Uint(), nil
 	case reflect.Float32, reflect.Float64:
-		return rx.Float() > ry.Float(), nil
+		return rx.Float() > ry.Convert(rx.Type()).Float(), nil
 	case reflect.String:
-		return rx.String() > ry.String(), nil
+		return rx.String() > ry.Convert(rx.Type()).String(), nil
 	default:
 		return false, fmt.Errorf("unexpected %s", rx.Kind())
 	}
@@ -120,19 +134,18 @@ func GreaterThan(x interface{}, y interface{}) (bool, error) {
 func GreaterThanEqual(x interface{}, y interface{}) (bool, error) {
 	rx := reflect.ValueOf(x)
 	ry := reflect.ValueOf(y)
-	if reflect.TypeOf(x).Kind() != reflect.TypeOf(y).Kind() {
-		// return rx.Float() > ry.Convert(rx.Type()).Float(), nil
-		return false, fmt.Errorf("mismatch %s <-> %s", rx.Kind(), ry.Kind())
-	}
+
 	switch rx.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return rx.Int() >= ry.Int(), nil
+		return rx.Int() >= ry.Convert(rx.Type()).Int(), nil
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return rx.Uint() >= ry.Uint(), nil
+		return rx.Uint() >= ry.Convert(rx.Type()).Uint(), nil
 	case reflect.Float32, reflect.Float64:
-		return rx.Float() >= ry.Float(), nil
+		return rx.Float() >= ry.Convert(rx.Type()).Float(), nil
 	case reflect.String:
-		return rx.String() >= ry.String(), nil
+		return rx.String() >= ry.Convert(rx.Type()).String(), nil
+	case reflect.Bool:
+		return rx.Bool() == ry.Convert(rx.Type()).Bool(), nil
 	default:
 		return reflect.DeepEqual(rx, ry), nil
 	}

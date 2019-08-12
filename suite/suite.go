@@ -18,9 +18,9 @@ type Env struct {
 // Simple
 func Simple(t *testing.T, ctx context.Context, env *Env) {
 	type dummy struct {
-		ID    core.ID `db:"id"`
-		Name  string  `db:"name"`
-		Value int     `db:"value"`
+		ID    core.ID `db:"id" json:"id"`
+		Name  string  `db:"name" json:"name"`
+		Value int     `db:"value" json:"value"`
 	}
 
 	c := env.Connect()

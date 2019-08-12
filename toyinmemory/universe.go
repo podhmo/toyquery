@@ -107,7 +107,7 @@ func (w *World) Find(ctx context.Context, dst interface{}, options ...func(*core
 			return Unmaterialize(dst, ob)
 		}
 	}
-	return core.ErrRecordNotFound.New(w.Describe())
+	return core.ErrRecordNotFound.New(fmt.Sprintf("%s with %+v", w.Describe(), exprs))
 
 }
 
