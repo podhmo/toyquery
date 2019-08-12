@@ -145,15 +145,34 @@ func (t *Table) InsertByID(ctx context.Context, id ID, v interface{}) error {
 func (t *Table) FindByID(ctx context.Context, id ID, dst interface{}) error {
 	// SELECT (<column name>...) FROM <table name> WHERE <id>=?
 	// TODO : id field
+	return t.Find(ctx, dst, core.Where("id=?", id))
+}
+
+// Find :
+func (t *Table) Find(ctx context.Context, dst interface{}, options ...func(*core.QOption)) error {
+	q := &core.QOption{}
+	for _, op := range options {
+		op(q)
+	}
+	if len(q.Wheres) == 0 {
+		return core.ErrEmptyCondition.New(t.Name)
+	}
+
+	var vals []interface{}
+	var fmts []string
+	for _, opt := range q.Wheres {
+		fmts = append(fmts, opt.Fmt)
+		vals = append(vals, opt.Vals...)
+	}
 
 	// XXX: SQLInjection (t.Name is stripped, but)
 	stmt := fmt.Sprintf(
-		`SELECT * FROM %s WHERE id=?`,
-		t.Name,
+		`SELECT * FROM %s WHERE %s`,
+		t.Name, strings.Join(fmts, " AND "),
 	)
 
 	db := t.session.Client.DB
-	if err := db.GetContext(ctx, dst, stmt, id); err != nil {
+	if err := db.GetContext(ctx, dst, stmt, vals...); err != nil {
 		return core.ErrRecordNotFound.Wrap(err, t.Name)
 	}
 	return nil
