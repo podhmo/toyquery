@@ -9,7 +9,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 )
 
 // ID :
@@ -35,13 +35,13 @@ func (c *Client) Close() error {
 }
 
 // Session :
-func (c *Client) Session(ctx context.Context) (core.Session, error) {
+func (c *Client) Session(ctx context.Context) (toyquery.Session, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.DB == nil {
 		db, err := sqlx.Open(c.Config.DriverName, c.Config.URI) // xxx
 		if err != nil {
-			return nil, core.ErrDatabaseNotFound.Wrap(err, "open")
+			return nil, toyquery.ErrDatabaseNotFound.Wrap(err, "open")
 		}
 		c.DB = db
 	}
@@ -76,7 +76,7 @@ func (s *Session) Close() error {
 }
 
 // Table :
-func (s *Session) Table(ctx context.Context, name string) (core.Table, error) {
+func (s *Session) Table(ctx context.Context, name string) (toyquery.Table, error) {
 	tableName := strings.SplitN(strings.TrimSpace(name), " ", 2)[0]
 	return &Table{session: s, Name: tableName}, nil
 }
@@ -105,7 +105,7 @@ func (t *Table) Count(ctx context.Context) (int, error) {
 
 	db := t.session.Client.DB
 	if err := db.GetContext(ctx, &c, stmt); err != nil {
-		return 0, core.ErrRecordNotFound.Wrap(err, t.Name)
+		return 0, toyquery.ErrRecordNotFound.Wrap(err, t.Name)
 	}
 	return c, nil
 }
@@ -145,17 +145,17 @@ func (t *Table) InsertByID(ctx context.Context, id ID, v interface{}) error {
 func (t *Table) FindByID(ctx context.Context, id ID, dst interface{}) error {
 	// SELECT (<column name>...) FROM <table name> WHERE <id>=?
 	// TODO : id field
-	return t.Find(ctx, dst, core.Where("id=?", id))
+	return t.Find(ctx, dst, toyquery.Where("id=?", id))
 }
 
 // Find :
-func (t *Table) Find(ctx context.Context, dst interface{}, options ...func(*core.QOption)) error {
-	q := &core.QOption{}
+func (t *Table) Find(ctx context.Context, dst interface{}, options ...func(*toyquery.QOption)) error {
+	q := &toyquery.QOption{}
 	for _, op := range options {
 		op(q)
 	}
 	if len(q.Wheres) == 0 {
-		return core.ErrEmptyCondition.New(t.Name)
+		return toyquery.ErrEmptyCondition.New(t.Name)
 	}
 
 	var vals []interface{}
@@ -173,7 +173,7 @@ func (t *Table) Find(ctx context.Context, dst interface{}, options ...func(*core
 
 	db := t.session.Client.DB
 	if err := db.GetContext(ctx, dst, stmt, vals...); err != nil {
-		return core.ErrRecordNotFound.Wrap(err, t.Name)
+		return toyquery.ErrRecordNotFound.Wrap(err, t.Name)
 	}
 	return nil
 }

@@ -5,22 +5,22 @@ import (
 	"testing"
 
 	"github.com/podhmo/noerror"
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 	"github.com/podhmo/toyquery/shortcut"
 )
 
 // Env :
 type Env struct {
-	Connect func() core.Client
-	Setup   func(core.Session)
+	Connect func() toyquery.Client
+	Setup   func(toyquery.Session)
 }
 
 // Simple
 func Simple(t *testing.T, ctx context.Context, env *Env) {
 	type dummy struct {
-		ID    core.ID `db:"id" json:"id"`
-		Name  string  `db:"name" json:"name"`
-		Value int     `db:"value" json:"value"`
+		ID    toyquery.ID `db:"id" json:"id"`
+		Name  string      `db:"name" json:"name"`
+		Value int         `db:"value" json:"value"`
 	}
 
 	c := env.Connect()
@@ -69,19 +69,19 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 
 	t.Run("find", func(t *testing.T) {
 		var got dummy
-		noerror.Must(t, table.Find(ctx, &got, core.Where("id = ?", dummies[0].ID)))
+		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("id = ?", dummies[0].ID)))
 		noerror.Should(t, noerror.DeepEqual(dummies[0]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, core.Where("? <> id", dummies[0].ID)))
+		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("? <> id", dummies[0].ID)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, core.Where("? < value", dummies[0].Value)))
+		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("? < value", dummies[0].Value)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, core.Where("value > ?", dummies[0].Value)))
+		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("value > ?", dummies[0].Value)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 
-		noerror.Must(t, table.Find(ctx, &got, core.Where("name = ?", dummies[0].Name)))
+		noerror.Must(t, table.Find(ctx, &got, toyquery.Where("name = ?", dummies[0].Name)))
 		noerror.Should(t, noerror.DeepEqual(dummies[0]).Actual(got))
 	})
 }
@@ -89,8 +89,8 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 // Shortcut
 func Shortcut(t *testing.T, env *Env) {
 	type dummy struct {
-		ID   core.ID `db:"id"`
-		Name string  `db:"name"`
+		ID   toyquery.ID `db:"id"`
+		Name string      `db:"name"`
 	}
 
 	c, teardown := shortcut.Create(t, env.Connect())

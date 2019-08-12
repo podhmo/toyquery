@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 	"github.com/podhmo/toyquery/suite"
 	"github.com/podhmo/toyquery/toysql"
 )
@@ -13,10 +13,10 @@ import (
 func TestIt(t *testing.T) {
 	ctx := context.Background()
 	env := &suite.Env{
-		Connect: func() core.Client {
+		Connect: func() toyquery.Client {
 			return toysql.Connect(ctx, "sqlite3", ":memory:")
 		},
-		Setup: func(s core.Session) {
+		Setup: func(s toyquery.Session) {
 			schema := `CREATE TABLE person (
         id text primary key not null,
         name text not null,

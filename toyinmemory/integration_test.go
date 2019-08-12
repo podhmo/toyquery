@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 	"github.com/podhmo/toyquery/suite"
 	"github.com/podhmo/toyquery/toyinmemory"
 )
@@ -12,7 +12,7 @@ import (
 func TestIt(t *testing.T) {
 	ctx := context.Background()
 	env := &suite.Env{
-		Connect: func() core.Client {
+		Connect: func() toyquery.Client {
 			return toyinmemory.Connect(ctx)
 		},
 	}

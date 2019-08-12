@@ -5,17 +5,17 @@ import (
 	"testing"
 
 	"github.com/podhmo/noerror"
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 )
 
 // Create :
-func Create(t *testing.T, c core.Client) (Client, func()) {
+func Create(t *testing.T, c toyquery.Client) (Client, func()) {
 	return &client{t: t, Client: c}, func() { t.Helper(); noerror.Must(t, c.Close()) }
 }
 
 type client struct {
 	t      *testing.T
-	Client core.Client
+	Client toyquery.Client
 }
 
 func (c *client) Session() Session {
@@ -28,11 +28,11 @@ func (c *client) Session() Session {
 
 type session struct {
 	t       *testing.T
-	session core.Session
+	session toyquery.Session
 }
 
 // Raw :
-func (s *session) Raw() core.Session {
+func (s *session) Raw() toyquery.Session {
 	return s.session
 }
 
@@ -53,7 +53,7 @@ func (s *session) Table(name string) Table {
 }
 
 type table struct {
-	Table core.Table
+	Table toyquery.Table
 }
 
 // Count :

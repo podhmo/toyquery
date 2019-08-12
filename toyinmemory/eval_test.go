@@ -10,7 +10,7 @@ import (
 func TestEval(t *testing.T) {
 	type Value struct {
 		ID    string
-		Value int    `db:"v"`
+		Value int `db:"v"`
 	}
 
 	type C struct {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 )
 
 // Config :
@@ -34,7 +34,7 @@ func (c *Client) Close() error {
 }
 
 // Session :
-func (c *Client) Session(ctx context.Context) (core.Session, error) {
+func (c *Client) Session(ctx context.Context) (toyquery.Session, error) {
 	return &Session{
 		Client: c,
 	}, nil
@@ -68,16 +68,16 @@ func (s *Session) Close() error {
 }
 
 // Table :
-func (s *Session) Table(ctx context.Context, name string) (core.Table, error) {
+func (s *Session) Table(ctx context.Context, name string) (toyquery.Table, error) {
 	u := s.Client.Universe
 	if u == nil {
-		return nil, core.ErrTableNotFound
+		return nil, toyquery.ErrTableNotFound
 	}
 
 	w, ok := u.Worlds[name]
 	if !ok {
 		if !s.Client.Config.AutoCreate {
-			return nil, core.ErrTableNotFound.New(name)
+			return nil, toyquery.ErrTableNotFound.New(name)
 		}
 		w = u.NewWorld(name)
 	}

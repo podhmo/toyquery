@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 )
 
 // Not goroutine safe
@@ -58,7 +58,7 @@ func (w *World) Count(ctx context.Context) (int, error) {
 func (w *World) InsertByID(ctx context.Context, id ID, src interface{}) error {
 	var ob Object
 	if err := Materialize(&ob, src); err != nil {
-		return core.ErrSomethingWrong.Wrap(err, w.Describe())
+		return toyquery.ErrSomethingWrong.Wrap(err, w.Describe())
 	}
 	w.Objects[id] = &ob
 	return nil
@@ -69,24 +69,24 @@ func (w *World) FindByID(ctx context.Context, id ID, dst interface{}) error {
 	if ob, ok := w.Objects[id]; ok {
 		return Unmaterialize(dst, ob)
 	}
-	return core.ErrRecordNotFound.New(w.Describe())
+	return toyquery.ErrRecordNotFound.New(w.Describe())
 }
 
 // Find :
-func (w *World) Find(ctx context.Context, dst interface{}, options ...func(*core.QOption)) error {
-	q := &core.QOption{}
+func (w *World) Find(ctx context.Context, dst interface{}, options ...func(*toyquery.QOption)) error {
+	q := &toyquery.QOption{}
 	for _, op := range options {
 		op(q)
 	}
 	if len(q.Wheres) == 0 {
-		return core.ErrEmptyCondition.New(w.Describe())
+		return toyquery.ErrEmptyCondition.New(w.Describe())
 	}
 
 	exprs := make([]Expr, 0, len(q.Wheres))
 	for _, opt := range q.Wheres {
 		expr, err := Parse(opt.Fmt, opt.Vals[0])
 		if err != nil {
-			return core.ErrInvalidCondition.Wrap(err, fmt.Sprintf("%s with %v", opt.Fmt, opt.Vals[0]))
+			return toyquery.ErrInvalidCondition.Wrap(err, fmt.Sprintf("%s with %v", opt.Fmt, opt.Vals[0]))
 		}
 		exprs = append(exprs, expr)
 	}
@@ -96,7 +96,7 @@ func (w *World) Find(ctx context.Context, dst interface{}, options ...func(*core
 		for _, expr := range exprs {
 			matched, err := Eval(expr, ob)
 			if err != nil {
-				return core.ErrSomethingWrong.Wrap(err, fmt.Sprintf("%v with %v", expr, ob))
+				return toyquery.ErrSomethingWrong.Wrap(err, fmt.Sprintf("%v with %v", expr, ob))
 			}
 			if !matched {
 				ok = matched
@@ -107,7 +107,7 @@ func (w *World) Find(ctx context.Context, dst interface{}, options ...func(*core
 			return Unmaterialize(dst, ob)
 		}
 	}
-	return core.ErrRecordNotFound.New(fmt.Sprintf("%s with %+v", w.Describe(), exprs))
+	return toyquery.ErrRecordNotFound.New(fmt.Sprintf("%s with %+v", w.Describe(), exprs))
 
 }
 

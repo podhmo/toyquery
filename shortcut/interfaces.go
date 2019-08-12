@@ -3,7 +3,7 @@ package shortcut
 import (
 	"testing"
 
-	"github.com/podhmo/toyquery/core"
+	"github.com/podhmo/toyquery"
 )
 
 // ID :
@@ -24,7 +24,7 @@ type SessionFactory interface {
 type Session interface {
 	Table(name string) Table
 	MustExec(t *testing.T, code string) // ?
-	Raw() core.Session
+	Raw() toyquery.Session
 }
 
 // Table :
