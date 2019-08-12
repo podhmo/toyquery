@@ -18,8 +18,9 @@ type Env struct {
 // Simple
 func Simple(t *testing.T, ctx context.Context, env *Env) {
 	type dummy struct {
-		ID   core.ID `db:"id"`
-		Name string  `db:"name"`
+		ID    core.ID `db:"id"`
+		Name  string  `db:"name"`
+		Value int     `db:"value"`
 	}
 
 	c := env.Connect()
@@ -30,8 +31,8 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 	defer noerror.Must(t, s.Close())
 
 	dummies := []dummy{
-		{ID: "1", Name: "foo"},
-		{ID: "2", Name: "bar"},
+		{ID: "1", Name: "foo", Value: 10},
+		{ID: "2", Name: "bar", Value: 100},
 	}
 
 	table, err := s.Table(ctx, "person")
@@ -60,9 +61,23 @@ func Simple(t *testing.T, ctx context.Context, env *Env) {
 		)
 	})
 
-	t.Run("find one", func(t *testing.T) {
+	t.Run("find by id", func(t *testing.T) {
 		var got dummy
 		noerror.Must(t, table.FindByID(ctx, dummies[1].ID, &got))
+		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
+	})
+	t.Run("find", func(t *testing.T) {
+		var got dummy
+		noerror.Must(t, table.Find(ctx, &got, core.Where("id = ?", dummies[0].ID)))
+		noerror.Should(t, noerror.DeepEqual(dummies[0]).Actual(got))
+
+		noerror.Must(t, table.Find(ctx, &got, core.Where("? <> id", dummies[0].ID)))
+		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
+
+		noerror.Must(t, table.Find(ctx, &got, core.Where("? < value", dummies[0].Value)))
+		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
+
+		noerror.Must(t, table.Find(ctx, &got, core.Where("value > ?", dummies[0].Value)))
 		noerror.Should(t, noerror.DeepEqual(dummies[1]).Actual(got))
 	})
 }

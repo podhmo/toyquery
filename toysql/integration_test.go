@@ -18,8 +18,9 @@ func TestIt(t *testing.T) {
 		},
 		Setup: func(s core.Session) {
 			schema := `CREATE TABLE person (
-        id text primary key,
-        name text);`
+        id text primary key not null,
+        name text not null,
+        value integer not null);`
 			s.MustExec(ctx, schema)
 		},
 	}
